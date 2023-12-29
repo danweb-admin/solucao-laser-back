@@ -7,6 +7,6 @@ resources:
 namespace: solucao-laser
 
 images:
-- name: solucao-api
-  newName: williambr2022/solucao-api
+- name: williambr2022/solucao-laser-back
+  newName: williambr2022/solucao-laser-back
   newTag: 9601b7dd062a4f54d47c79ee85affd6689eafb6f

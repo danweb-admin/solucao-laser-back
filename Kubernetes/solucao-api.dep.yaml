@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment # Kubernetes resource kind we are creating
 metadata:
-  name: demo-danweb-api
-  namespace: demo-danweb
+  name: solucao-laser-back
+  namespace: solucao-laser
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: demo-danweb-api
+      app: solucao-laser-back
   template:
     metadata:
       labels:
-        app: demo-danweb-api
+        app: solucao-laser-back
     spec:
       containers:
-        - name: demo-danweb-api
-          image: williambr2022/solucao-api:latest
+        - name: solucao-laser-back
+          image: williambr2022/solucao-laser-back
           ports:
             - containerPort: 80
           imagePullPolicy: Always
