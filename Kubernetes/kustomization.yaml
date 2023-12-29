@@ -7,6 +7,9 @@ resources:
 namespace: solucao-laser
 
 images:
+- name: williambr2022/demo-agenda-back
+  newName: williambr2022/demo-agenda-back
+  newTag: 6e21676bb6cc765d3df7eb3c95ccd8edbaf448f6
 - name: williambr2022/solucao-laser-back
   newName: williambr2022/solucao-laser-back
   newTag: 9601b7dd062a4f54d47c79ee85affd6689eafb6f
