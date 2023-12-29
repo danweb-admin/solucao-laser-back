@@ -45,30 +45,9 @@ spec:
                 configMapKeyRef:
                   name: configuration
                   key: key_md5
-            - name: DocsPath
-              valueFrom:
-                configMapKeyRef:
-                  name: configuration
-                  key: docs_path
-            - name: ModelDocsPath
-              valueFrom:
-                configMapKeyRef:
-                  name: configuration
-                  key: model_docs_path
             - name: Password
               valueFrom:
                 secretKeyRef:
                   name: secret
                   key: password
-          volumeMounts:
-          - name: contracts-storage
-            mountPath: /var/opt/demo-danweb/contratos
-          - name: models-storage
-            mountPath: /var/opt/demo-danweb/modelos
-      volumes:
-      - name: contracts-storage
-        persistentVolumeClaim:
-          claimName: contracts-data
-      - name: models-storage
-        persistentVolumeClaim:
-          claimName: models-data
+          
