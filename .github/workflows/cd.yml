@@ -27,7 +27,7 @@ jobs:
       with:
         username: williambr2022
         password: ${{ secrets.DOCKER_PASSWORD }} 
-        repository: williambr2022/demo-agenda-back
+        repository: williambr2022/solucao-laser-back
         tags: ${{ github.sha }}, latest
   
   deploy:
@@ -44,7 +44,7 @@ jobs:
       - name: update k8s
         run: |
           cd Kubernetes
-          kustomize edit set image williambr2022/demo-agenda-back=williambr2022/demo-agenda-back:${{ github.sha }}
+          kustomize edit set image williambr2022/solucao-laser-back=williambr2022/solucao-laser-back:${{ github.sha }}
           cat kustomization.yaml
       - name: commit
         run: |
