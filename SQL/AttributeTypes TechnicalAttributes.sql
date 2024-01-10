@@ -1,6 +1,6 @@
 insert into AttributeTypes ([key], [value]) VALUES ('Texto','string')
 insert into AttributeTypes ([key], [value]) VALUES ('Data','datetime')
-insert into AttributeTypes ([key], [value]) VALUES ('Hora','datetime')
+insert into AttributeTypes ([key], [value]) VALUES ('Hora','time')
 insert into AttributeTypes ([key], [value]) VALUES ('Decimal','decimal')
 insert into AttributeTypes ([key], [value]) VALUES ('Decimal Extenso','decimal_extenso')
 insert into AttributeTypes ([key], [value]) VALUES ('Data Extenso','datetime_extenso')
