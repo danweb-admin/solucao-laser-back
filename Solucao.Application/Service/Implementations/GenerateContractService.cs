@@ -144,6 +144,7 @@ namespace Solucao.Application.Service.Implementations
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 Console.WriteLine(ex.StackTrace);
                 return false;
             }
