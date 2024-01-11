@@ -127,7 +127,7 @@ namespace Solucao.Application.Service.Implementations
             {
                 using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(copiedFile, true))
                 {
-                    Console.WriteLine($"wordDoc: {wordDoc}");
+                    Console.WriteLine($"wordDoc: {wordDoc.MainDocumentPar}");
 
                     string docText = null;
                     using (StreamReader sr = new StreamReader(wordDoc.MainDocumentPart.GetStream()))
