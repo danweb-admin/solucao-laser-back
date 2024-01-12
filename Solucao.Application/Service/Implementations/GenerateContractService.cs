@@ -121,14 +121,10 @@ namespace Solucao.Application.Service.Implementations
 
         private bool ExecuteReplace(string copiedFile, Model model, Calendar calendar)
         {
-            Console.WriteLine($"copiedFile: {copiedFile}" );
-
             try
             {
                 using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(copiedFile, true))
                 {
-                    Console.WriteLine($"wordDoc: {wordDoc.MainDocumentPart}");
-
                     string docText = null;
                     using (StreamReader sr = new StreamReader(wordDoc.MainDocumentPart.GetStream()))
                         docText = sr.ReadToEnd();
@@ -149,7 +145,6 @@ namespace Solucao.Application.Service.Implementations
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Console.WriteLine(ex.StackTrace);
                 return false;
             }
             
