@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using Humanizer;
 using Microsoft.AspNetCore.Http;
@@ -60,6 +62,8 @@ namespace Solucao.Application.Service.Implementations
             var contractPath = Environment.GetEnvironmentVariable("DocsPath");
 
             var calendar = await calendarRepository.GetById(request.CalendarId);
+            calendar.RentalTime = CalculateMinutes(calendar.StartTime.Value, calendar.EndTime.Value);
+            SearchCustomerValue(calendar);
 
             var model = await modelRepository.GetByEquipament(calendar.EquipamentId);
 
@@ -85,8 +89,6 @@ namespace Solucao.Application.Service.Implementations
             return new ValidationResult("Erro para gerar o contrato");
         }
 
-        
-
         private string FormatNameFile(string locatarioName, string equipamentName, DateTime date)
         {
             var _locatarioName = locatarioName.Replace(" ","");
@@ -110,7 +112,7 @@ namespace Solucao.Application.Service.Implementations
                 if (!Directory.Exists(createdDirectory))
                     Directory.CreateDirectory(createdDirectory);
 
-                var outputFileName = Path.Combine(createdDirectory, fileName);
+                var outputFileName = System.IO.Path.Combine(createdDirectory, fileName);
                 using (FileStream outputFileStream = new FileStream(outputFileName, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
                 {
                     await originalFileStream.CopyToAsync(outputFileStream);
@@ -193,19 +195,94 @@ namespace Solucao.Application.Service.Implementations
                 case "decimal":
                     return decimal.Parse(value).ToString().Replace(".", ",");
                 case "decimal_extenso":
-                    var decimalSplit = Decimal.Parse(value).ToString("n2").Split('.');
-                    var part1 = long.Parse(decimalSplit[0].Replace(",","")).ToWords(cultureInfo);
-                    var part2 = int.Parse(decimalSplit[1]).ToWords(cultureInfo);
-
-                    if (part2 == "zero")
-                        return $"{part1} reais";
-                    return $"{part1} reais e {part2} centavos";
+                    return decimalExtenso(value);
+                case "time_extenso":
+                    return timeExtenso(value);
                 default:
                     return value;
             }
         }
 
-        
+        private string decimalExtenso(string value)
+        {
+            var decimalSplit = decimal.Parse(value).ToString("n2").Split('.');
+            var part1 = long.Parse(decimalSplit[0].Replace(",", "")).ToWords(cultureInfo);
+            var part2 = int.Parse(decimalSplit[1]).ToWords(cultureInfo);
+
+            if (part2 == "zero")
+                return $"{part1} reais";
+            return $"{part1} reais e {part2} centavos";
+        }
+
+        private string timeExtenso(string value)
+        {
+            var minutesTotal = int.Parse(value);
+
+            int hours = minutesTotal / 60;
+            int minutes = minutesTotal % 60;
+
+            string result = $"{hours} {(hours == 1 ? "Hora" : "Horas")}";
+
+            if (minutes > 0)
+                result += $" e {minutes} {(minutes == 1 ? "minuto" : "minutos")}";
+
+            return result;
+        }
+
+        private void SearchCustomerValue(Calendar calendar)
+        {
+            TimeSpan difference = calendar.EndTime.Value - calendar.StartTime.Value;
+            var rentalTime = difference.TotalHours;
+
+            var split = calendar.Client.EquipamentValues.Split("->");
+
+            foreach (var line in split)
+            {
+                if (string.IsNullOrEmpty(line))
+                    continue;
+
+                var strings = line.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                var equipamento = strings[0].Trim();
+
+                if (calendar.Equipament.Name.ToUpper().Contains(equipamento))
+                {
+                    
+                    for (int i = 0; i < strings.Length; i++)
+                    {
+                        if (i == 0)
+                            continue;
+
+                        var hoursValues = strings[i].Split("–");
+
+                        var hours = hoursValues[0].Trim();
+                        var value = decimal.Parse( hoursValues[1].Trim().Replace(".","").Replace(",","."));
+
+                        var hr = int.Parse(Regex.Replace(hours.Trim(), @"[^\d]", ""));
+
+                        if (rentalTime <= hr)
+                        {
+                            calendar.Value = value;
+                            return;
+                        }
+                    }
+                }
+            }
+
+            throw new CalendarNoValueException("Não foi encontrado o valor para a Locação no cadastro do cliente");
+            
+        }
+
+
+
+        private int CalculateMinutes(DateTime startTime, DateTime endTime)
+        {
+            if (endTime < startTime)
+                throw new ArgumentException("A data final deve ser maior ou igual à data inicial.");
+
+            TimeSpan difference = endTime - startTime;
+            return (int)difference.TotalMinutes;
+        }
+
     }
 }
 
