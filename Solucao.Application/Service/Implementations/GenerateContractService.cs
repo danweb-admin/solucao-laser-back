@@ -252,7 +252,7 @@ namespace Solucao.Application.Service.Implementations
                         if (i == 0)
                             continue;
 
-                        var hoursValues = strings[i].Split("–");
+                        var hoursValues = strings[i].Replace("-", "–").Split("–");
 
                         var hours = hoursValues[0].Trim();
                         var value = decimal.Parse( hoursValues[1].Trim().Replace(".","").Replace(",","."));
