@@ -59,6 +59,8 @@ namespace Solucao.Application.Data.Repositories
             return await Db.Calendars
                         .Include(x => x.Equipament)
                         .Include(x => x.Client)
+                        .Include(x => x.CalendarSpecifications)
+                        .Include("CalendarSpecifications.Specification")
                         .FirstOrDefaultAsync(x => x.Id == id);
         }
 

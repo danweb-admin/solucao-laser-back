@@ -11,8 +11,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Humanizer;
 using Microsoft.AspNetCore.Http;
+using Microsoft.VisualBasic;
 using Solucao.Application.Contracts;
 using Solucao.Application.Contracts.Requests;
 using Solucao.Application.Data.Entities;
@@ -61,7 +63,7 @@ namespace Solucao.Application.Service.Implementations
             var modelPath = Environment.GetEnvironmentVariable("ModelDocsPath");
             var contractPath = Environment.GetEnvironmentVariable("DocsPath");
 
-            var calendar = await calendarRepository.GetById(request.CalendarId);
+            var calendar = mapper.Map<CalendarViewModel>( await calendarRepository.GetById(request.CalendarId));
             calendar.RentalTime = CalculateMinutes(calendar.StartTime.Value, calendar.EndTime.Value);
             SearchCustomerValue(calendar);
 
@@ -81,7 +83,8 @@ namespace Solucao.Application.Service.Implementations
                 calendar.ContractPath = copiedFile;
                 calendar.UpdatedAt = DateTime.Now;
                 calendar.ContractMade = true;
-                await calendarRepository.Update(calendar);
+                
+                await calendarRepository.Update(mapper.Map<Calendar>(calendar));
 
                 return ValidationResult.Success;
             }
@@ -121,7 +124,7 @@ namespace Solucao.Application.Service.Implementations
             }
         }
 
-        private bool ExecuteReplace(string copiedFile, Model model, Calendar calendar)
+        private bool ExecuteReplace(string copiedFile, Model model, CalendarViewModel calendar)
         {
             try
             {
@@ -221,7 +224,15 @@ namespace Solucao.Application.Service.Implementations
             int hours = minutesTotal / 60;
             int minutes = minutesTotal % 60;
 
-            string result = $"{hours} {(hours == 1 ? "Hora" : "Horas")}";
+            string result = "";
+
+            if (hours == 0) {
+                if (minutes > 0)
+                    result += $"{minutes} {(minutes == 1 ? "minuto" : "minutos")}";
+                return result;
+            }
+
+            result = $"{hours} {(hours == 1 ? "Hora" : "Horas")}";
 
             if (minutes > 0)
                 result += $" e {minutes} {(minutes == 1 ? "minuto" : "minutos")}";
@@ -229,7 +240,7 @@ namespace Solucao.Application.Service.Implementations
             return result;
         }
 
-        private void SearchCustomerValue(Calendar calendar)
+        private void SearchCustomerValue(CalendarViewModel calendar)
         {
             TimeSpan difference = calendar.EndTime.Value - calendar.StartTime.Value;
             var rentalTime = difference.TotalHours;
@@ -261,7 +272,10 @@ namespace Solucao.Application.Service.Implementations
 
                         if (rentalTime <= hr)
                         {
-                            calendar.Value = value;
+                            if (hoursValues.Length > 2)
+                                calendar.Value = ValuesBySpecification(calendar,hoursValues);
+                            else
+                                calendar.Value = calendar.ValueWithoutSpec = value;
                             return;
                         }
                     }
@@ -272,7 +286,28 @@ namespace Solucao.Application.Service.Implementations
             
         }
 
+        private decimal ValuesBySpecification(CalendarViewModel calendar, string[] hoursValues) { 
+            decimal retorno = decimal.Parse(hoursValues[1].Trim().Replace(".", "").Replace(",", "."));
+            var specification = calendar.CalendarSpecifications.Where(x => x.Active);
 
+            calendar.ValueWithoutSpec = retorno;
+
+            for (int i = 2; i < hoursValues.Length; i++)
+            {
+                var ponteiraValor = hoursValues[i];
+                var temp = ponteiraValor.Split("+");
+                var ponteira = temp[0].ToString().Trim();
+                var valor = decimal.Parse(temp[1]);
+                if (specification.Any(x => x.Specification.Name.ToUpper().Contains(temp[0].Trim())))
+                {
+                    retorno += valor;
+                    calendar.Additional1 = valor;
+
+                }
+            }
+
+            return retorno;
+        }
 
         private int CalculateMinutes(DateTime startTime, DateTime endTime)
         {
