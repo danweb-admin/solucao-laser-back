@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
-using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Humanizer;
-using Microsoft.AspNetCore.Http;
-using Microsoft.VisualBasic;
 using Solucao.Application.Contracts;
 using Solucao.Application.Contracts.Requests;
 using Solucao.Application.Data.Entities;
@@ -22,11 +16,12 @@ using Solucao.Application.Data.Repositories;
 using Solucao.Application.Exceptions.Calendar;
 using Solucao.Application.Exceptions.Model;
 using Solucao.Application.Service.Interfaces;
+using Solucao.Application.Utils;
 using Calendar = Solucao.Application.Data.Entities.Calendar;
 
 namespace Solucao.Application.Service.Implementations
 {
-	public class GenerateContractService : IGenerateContractService
+    public class GenerateContractService : IGenerateContractService
 	{
         private readonly IMapper mapper;
         private readonly CalendarRepository calendarRepository;
@@ -74,7 +69,7 @@ namespace Solucao.Application.Service.Implementations
 
             var contractFileName = FormatNameFile(calendar.Client.Name, calendar.Equipament.Name, calendar.Date);
 
-            var copiedFile = await CopyFileStream(modelPath, contractPath,model.ModelFileName, contractFileName, calendar.Date);
+            var copiedFile = await CopyFileStream(modelPath, contractPath, model.ModelFileName, contractFileName, calendar.Date);
 
             var result = ExecuteReplace(copiedFile, model, calendar);
 
@@ -180,7 +175,8 @@ namespace Solucao.Application.Service.Implementations
                 // Obter valor da propriedade
                 value = propInfo.GetValue(value);
             }
-
+            if (value == null)
+                value = "";
             // Converter valor para string (assumindo que a propriedade é do tipo string)
             return FormatValue(value.ToString(), attrType);
         }
@@ -192,11 +188,14 @@ namespace Solucao.Application.Service.Implementations
                 case "datetime":
                     return DateTime.Parse(value).ToString("dd/MM/yyyy");
                 case "datetime_extenso":
-                    return DateTime.Parse(value).ToString("D", cultureInfo);
+                    var monthDay = DateTime.Parse(value).ToString("M", cultureInfo);
+                    var year = DateTime.Parse(value).ToString("yyyy", cultureInfo);
+                    
+                    return $"{monthDay} de {year}";
                 case "time":
                     return DateTime.Parse(value).ToString("HH:mm");
                 case "decimal":
-                    return decimal.Parse(value).ToString().Replace(".", ",");
+                    return decimal.Parse(value).ToString("N2", cultureInfo);
                 case "decimal_extenso":
                     return decimalExtenso(value);
                 case "time_extenso":
@@ -209,10 +208,10 @@ namespace Solucao.Application.Service.Implementations
         private string decimalExtenso(string value)
         {
             var decimalSplit = decimal.Parse(value).ToString("n2").Split('.');
-            var part1 = long.Parse(decimalSplit[0].Replace(",", "")).ToWords(cultureInfo);
+            var part1 = long.Parse(decimalSplit[0].Replace(",", "")).ToWords(cultureInfo).ToTitleCase(TitleCase.First);
             var part2 = int.Parse(decimalSplit[1]).ToWords(cultureInfo);
 
-            if (part2 == "zero")
+            if (part2 == "Zero")
                 return $"{part1} reais";
             return $"{part1} reais e {part2} centavos";
         }
@@ -232,7 +231,7 @@ namespace Solucao.Application.Service.Implementations
                 return result;
             }
 
-            result = $"{hours} {(hours == 1 ? "Hora" : "Horas")}";
+            result = $"{hours} {(hours == 1 ? "hora" : "horas")}";
 
             if (minutes > 0)
                 result += $" e {minutes} {(minutes == 1 ? "minuto" : "minutos")}";
@@ -297,7 +296,7 @@ namespace Solucao.Application.Service.Implementations
                 var ponteiraValor = hoursValues[i];
                 var temp = ponteiraValor.Split("+");
                 var ponteira = temp[0].ToString().Trim();
-                var valor = decimal.Parse(temp[1]);
+                var valor = decimal.Parse(temp[1].Replace(",",""));
                 if (specification.Any(x => x.Specification.Name.ToUpper().Contains(temp[0].Trim())))
                 {
                     retorno += valor;
