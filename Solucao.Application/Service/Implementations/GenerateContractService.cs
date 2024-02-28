@@ -211,7 +211,7 @@ namespace Solucao.Application.Service.Implementations
             var part1 = long.Parse(decimalSplit[0].Replace(",", "")).ToWords(cultureInfo).ToTitleCase(TitleCase.First);
             var part2 = int.Parse(decimalSplit[1]).ToWords(cultureInfo);
 
-            if (part2 == "Zero")
+            if (part2 == "zero")
                 return $"{part1} reais";
             return $"{part1} reais e {part2} centavos";
         }
