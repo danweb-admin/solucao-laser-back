@@ -269,7 +269,7 @@ namespace Solucao.Application.Service.Implementations
 
                         var hr = int.Parse(Regex.Replace(hours.Trim(), @"[^\d]", ""));
 
-                        if (rentalTime <= hr)
+                        if (rentalTime == hr)
                         {
                             if (hoursValues.Length > 2)
                                 calendar.Value = ValuesBySpecification(calendar,hoursValues);
