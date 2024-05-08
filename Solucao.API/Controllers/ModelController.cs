@@ -68,6 +68,9 @@ namespace Solucao.API.Controllers
                     if (Directory.Exists(pathToSave))
                         Directory.CreateDirectory(pathToSave);
 
+                    if (System.IO.File.Exists(fullPath))
+                        System.IO.File.Delete(fullPath);
+
                     using (var stream = new FileStream(fullPath, FileMode.Create,FileAccess.ReadWrite,FileShare.ReadWrite))
                     {
                         file.CopyToAsync(stream);

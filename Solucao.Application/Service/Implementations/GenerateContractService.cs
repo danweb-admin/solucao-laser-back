@@ -60,6 +60,7 @@ namespace Solucao.Application.Service.Implementations
 
             var calendar = mapper.Map<CalendarViewModel>( await calendarRepository.GetById(request.CalendarId));
             calendar.RentalTime = CalculateMinutes(calendar.StartTime.Value, calendar.EndTime.Value);
+            calendar.Amount = calendar.Value + calendar.Freight - calendar.Discount;
             SearchCustomerValue(calendar);
 
             var model = await modelRepository.GetByEquipament(calendar.EquipamentId);
@@ -266,8 +267,9 @@ namespace Solucao.Application.Service.Implementations
 
                         var hours = hoursValues[0].Trim();
                         var value = decimal.Parse( hoursValues[1].Trim().Replace(".","").Replace(",","."));
+                        var t = Regex.Replace(hours.Trim().Replace(",", "."), @"\p{L}+", "");
 
-                        var hr = int.Parse(Regex.Replace(hours.Trim(), @"[^\d]", ""));
+                        var hr = double.Parse(Regex.Replace(hours.Trim().Replace(",","."), @"\p{L}+", ""));
 
                         if (rentalTime == hr)
                         {
