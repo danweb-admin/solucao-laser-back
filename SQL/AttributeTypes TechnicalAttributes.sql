@@ -15,6 +15,9 @@ insert into TechnicalAttributes ([key], [value]) VALUES ('Valor','Value')
 insert into TechnicalAttributes ([key], [value]) VALUES ('Tempo Locação','RentalTime')
 insert into TechnicalAttributes ([key], [value]) VALUES ('Ponteira1','Additional1')
 insert into TechnicalAttributes ([key], [value]) VALUES ('Valor Sem Ponteira','ValueWithoutSpec')
+insert into TechnicalAttributes ([key], [value]) VALUES ('Desconto','Discount')
+insert into TechnicalAttributes ([key], [value]) VALUES ('Frete','Freight')
+
 
 
 

@@ -40,6 +40,7 @@ namespace Solucao.Application.Contracts
         public decimal ValueWithoutSpec { get; set; }
         public decimal Discount { get; set; }
         public decimal Freight { get; set; }
+        public decimal TotalValue { get; set; }
         public User User { get; set; }
         public Person Technique { get; set; }
         public Person Driver { get; set; }

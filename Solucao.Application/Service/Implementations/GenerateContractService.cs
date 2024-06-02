@@ -26,15 +26,18 @@ namespace Solucao.Application.Service.Implementations
         private readonly IMapper mapper;
         private readonly CalendarRepository calendarRepository;
         private readonly ModelRepository modelRepository;
+        private readonly ModelAttributesRepository modelAttributesRepository;
         private CultureInfo cultureInfo = new CultureInfo("pt-BR");
 
 
-        public GenerateContractService(IMapper _mapper, CalendarRepository _calendarRepository, ModelRepository _modelRepository)
+        public GenerateContractService(IMapper _mapper, CalendarRepository _calendarRepository, ModelRepository _modelRepository, ModelAttributesRepository _modelAttributesRepository)
 		{
             mapper = _mapper;
             calendarRepository = _calendarRepository;
             modelRepository = _modelRepository;
-		}
+            modelAttributesRepository = _modelAttributesRepository;
+
+        }
 
         public async Task<IEnumerable<CalendarViewModel>> GetAllByDayAndContractMade(DateTime date)
         {
@@ -60,10 +63,13 @@ namespace Solucao.Application.Service.Implementations
 
             var calendar = mapper.Map<CalendarViewModel>( await calendarRepository.GetById(request.CalendarId));
             calendar.RentalTime = CalculateMinutes(calendar.StartTime.Value, calendar.EndTime.Value);
-            calendar.Amount = calendar.Value + calendar.Freight - calendar.Discount;
             SearchCustomerValue(calendar);
+            calendar.TotalValue = calendar.Value + calendar.Freight - calendar.Discount + calendar.Additional1;
+
 
             var model = await modelRepository.GetByEquipament(calendar.EquipamentId);
+
+            var models = await modelAttributesRepository.GetAll();
 
             if (model == null)
                 throw new ModelNotFoundException("Modelo de contrato para esse equipamento não encontrado.");
@@ -72,7 +78,7 @@ namespace Solucao.Application.Service.Implementations
 
             var copiedFile = await CopyFileStream(modelPath, contractPath, model.ModelFileName, contractFileName, calendar.Date);
 
-            var result = ExecuteReplace(copiedFile, model, calendar);
+            var result = ExecuteReplace(copiedFile, models, calendar);
 
             if (result)
             {
@@ -120,7 +126,7 @@ namespace Solucao.Application.Service.Implementations
             }
         }
 
-        private bool ExecuteReplace(string copiedFile, Model model, CalendarViewModel calendar)
+        private bool ExecuteReplace(string copiedFile, IEnumerable<ModelAttributes> models, CalendarViewModel calendar)
         {
             try
             {
@@ -130,7 +136,7 @@ namespace Solucao.Application.Service.Implementations
                     using (StreamReader sr = new StreamReader(wordDoc.MainDocumentPart.GetStream()))
                         docText = sr.ReadToEnd();
 
-                    foreach (var item in model.ModelAttributes)
+                    foreach (var item in models)
                     {
                         Regex regexText = new Regex(item.FileAttribute.Trim());
                         var valueItem = GetPropertieValue(calendar, item.TechnicalAttribute, item.AttributeType);
@@ -267,7 +273,6 @@ namespace Solucao.Application.Service.Implementations
 
                         var hours = hoursValues[0].Trim();
                         var value = decimal.Parse( hoursValues[1].Trim().Replace(".","").Replace(",","."));
-                        var t = Regex.Replace(hours.Trim().Replace(",", "."), @"\p{L}+", "");
 
                         var hr = double.Parse(Regex.Replace(hours.Trim().Replace(",","."), @"\p{L}+", ""));
 

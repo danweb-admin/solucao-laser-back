@@ -27,6 +27,11 @@ namespace Solucao.Application.Data.Repositories
             return await Db.ModelAttributes.Where(x => x.ModelId == modelId).ToListAsync();
         }
 
+        public async Task<IEnumerable<ModelAttributes>> GetAll()
+        {
+            return await Db.ModelAttributes.Where(x => x.Active).ToListAsync();
+        }
+
         public async Task<ValidationResult> Add(ModelAttributes model)
         {
             try

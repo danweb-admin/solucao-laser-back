@@ -84,6 +84,9 @@ namespace Solucao.Application.Data.Mappings
             builder.Property(c => c.Discount).
                 HasColumnType("decimal");
 
+            builder.Property(c => c.Discount).
+                HasColumnType("decimal(18,2)");
+
             builder.Property(c => c.ContractPath).
                 HasColumnType("varchar(250)");
         }
