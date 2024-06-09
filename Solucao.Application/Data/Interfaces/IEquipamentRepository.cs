@@ -10,6 +10,7 @@ namespace Solucao.Application.Data.Interfaces
 	{
         Task<IEnumerable<Equipament>> GetAll(bool ativo);
         Task<IEnumerable<Equipament>> GetListById(List<Guid> guids);
+        Task<Equipament> GetById(Guid id);
         Task<ValidationResult> Add(Equipament equipament);
         Task<ValidationResult> Update(Equipament equipament);
     }

@@ -31,9 +31,9 @@ namespace Solucao.Application.Data.Repositories
             return await Db.Clients.Include(x => x.City).Include(x => x.State).Where(x => x.Active == ativo && (x.Address.Contains(search) || x.Email.Contains(search) || x.Name.Contains(search) || x.Phone.Contains(search) || x.CellPhone.Contains(search))).OrderBy(x => x.Name).ToListAsync();
         }
 
-        public async Task<Client> GetById(string Id)
+        public async Task<Client> GetById(Guid Id)
         {
-            return await Db.Clients.FindAsync(new Guid(Id));
+            return await Db.Clients.FindAsync(Id);
         }
 
         public async Task<ValidationResult> Add(Client client)

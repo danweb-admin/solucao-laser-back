@@ -33,15 +33,25 @@ namespace Solucao.API.Controllers
             logger = _logger;
         }
 
+        [HttpGet("calendar/get-all")]
+        public async Task<IEnumerable<CalendarViewModel>> GetAllAsync([FromQuery] CalendarRequest model)
+        {
+            var user = await userService.GetByName(User.Identity.Name);
+
+            return await calendarService.GetAll(model.Date, user);
+        }
+
         [HttpGet("calendar")]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(Calendar))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ApplicationError))]
         [SwaggerResponse((int)HttpStatusCode.Conflict, Type = typeof(ApplicationError))]
         [SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(ApplicationError))]
-        public async Task<IEnumerable<EquipamentList>> GetAllAsync([FromQuery] CalendarRequest model)
+        public async Task<IEnumerable<EquipamentList>> GetAllByDateAsync([FromQuery] CalendarRequest model)
         {
             logger.LogInformation($"{nameof(CalendarsController)} -{nameof(GetAllAsync)} | Inicio da chamada");
-            return await calendarService.GetAllByDate(model.Date);
+            var user = await userService.GetByName(User.Identity.Name);
+
+            return await calendarService.GetAllByDate(model.Date,user);
         }
 
         [HttpGet("calendar/schedules")]
@@ -56,7 +66,7 @@ namespace Solucao.API.Controllers
             var equipamentIds = new List<Guid>();
 
             if (!string.IsNullOrEmpty(model.DriverList))
-             list = model.DriverList.Split(',').Select(Guid.Parse).ToList();
+                list = model.DriverList.Split(',').Select(Guid.Parse).ToList();
 
             if (!string.IsNullOrEmpty(model.EquipamentList))
                 equipamentIds = model.EquipamentList.Split(',').Select(Guid.Parse).ToList();
@@ -101,7 +111,7 @@ namespace Solucao.API.Controllers
                 else
                     model.Note += result.ErrorMessage;
             }
-            
+
             var user = await userService.GetByName(User.Identity.Name);
 
             result = await calendarService.Add(model, user.Id);

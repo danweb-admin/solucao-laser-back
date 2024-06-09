@@ -4,8 +4,6 @@ using Solucao.Application.Data.Interfaces;
 using Solucao.Application.Data.Repositories;
 using Solucao.Application.Service.Implementations;
 using Solucao.Application.Service.Interfaces;
-using System;
-using System.Net.Http;
 
 namespace Solucao.CrossCutting
 {
@@ -29,23 +27,26 @@ namespace Solucao.CrossCutting
             services.AddScoped<IModelAttributesService, ModelAttributesService>();
             services.AddScoped<IModelConfigurationService, ModelConfigurationService>();
             services.AddScoped<IGenerateContractService, GenerateContractService>();
+            services.AddScoped<IConsumableService, ConsumableService>();
             services.AddScoped<TokenService>();
 
             // Infra
             services.AddScoped<UserRepository>();
-            services.AddScoped<IPersonRepository,PersonRepository>();
-            services.AddScoped<IClientRepository,ClientRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IStickyNoteRepository, StickyNoteRepository>();
             services.AddScoped<StateRepository>();
             services.AddScoped<CityRepository>();
             services.AddScoped<SpecificationRepository>();
-            services.AddScoped<IEquipamentRepository,EquipamentRepository>();
+            services.AddScoped<IEquipamentRepository, EquipamentRepository>();
             services.AddScoped<EquipamentSpecificationsRepository>();
             services.AddScoped<CalendarRepository>();
             services.AddScoped<ModelRepository>();
             services.AddScoped<ModelAttributesRepository>();
             services.AddScoped<AttributeTypesRepository>();
             services.AddScoped<TechnicalAttributesRepository>();
+            services.AddScoped<HistoryRepository>();
+            services.AddScoped<ConsumableRepository>();
             services.AddScoped<SolucaoContext>();
 
 

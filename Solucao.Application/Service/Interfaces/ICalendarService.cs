@@ -13,8 +13,8 @@ namespace Solucao.Application.Service.Interfaces
     {
         Task<ValidationResult> Add(CalendarViewModel calendar, Guid user);
         Task<ValidationResult> Update(CalendarViewModel calendar, Guid user);
-        Task<IEnumerable<CalendarViewModel>> GetAll(DateTime date);
-        Task<IEnumerable<EquipamentList>> GetAllByDate(DateTime date);
+        Task<IEnumerable<CalendarViewModel>> GetAll(DateTime date, UserViewModel user);
+        Task<IEnumerable<EquipamentList>> GetAllByDate(DateTime date, UserViewModel user);
         Task<CalendarViewModel> GetById(Guid id);
         Task<ValidationResult> UpdateDriverOrTechniqueCalendar(Guid id, Guid personId, bool isDriver, bool isCollect);
         Task<ValidationResult> UpdateStatusOrTravelOnCalendar(Guid id, string status, string travelOn, bool isTravelOn);

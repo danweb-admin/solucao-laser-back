@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.EntityFrameworkCore;
 using NetDevPack.Data;
 using Solucao.Application.Contracts.Response;
 using Solucao.Application.Data.Entities;
@@ -24,9 +26,35 @@ namespace Solucao.Application.Data.Repositories
             DbSet = Db.Set<Calendar>();
         }
 
-        public async Task<IEnumerable<Calendar>> GetAll(DateTime date)
+        public async Task<IEnumerable<Calendar>> GetAll(DateTime date, User user)
         {
-            
+            if (user.Role == "driver")
+            {
+                var result = await Db.Calendars
+                .Include(x => x.Equipament)
+                .Include(x => x.Client.City)
+                .Include(x => x.Client)
+                .Include(x => x.Driver)
+                .Include(x => x.DriverCollects)
+                .Include(x => x.Technique)
+                .Include(x => x.User)
+                .Include(x => x.CalendarSpecifications)
+                .Where(x => x.Date.Date == date && x.Active && !notIn.Contains(x.Status))
+                .Join(Db.People,
+                      c => c.DriverId,
+                      p => p.Id,
+                      (c, p) => new { Calendar = c, Person = p })
+                .Join(Db.Users,
+                      cp => cp.Person.UserId,
+                      u => u.Id,
+                      (cp, u) => new { cp.Calendar, cp.Person, User = u })
+                .Where(cp => cp.User.Id == user.Id)
+                .Select(cp => cp.Calendar)
+                .ToListAsync();
+
+                return result;
+            }
+
 
             return await Db.Calendars.Include(x => x.Equipament)
                                          .Include(x => x.Client.City)

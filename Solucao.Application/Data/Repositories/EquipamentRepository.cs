@@ -65,5 +65,10 @@ namespace Solucao.Application.Data.Repositories
             }
 
         }
+
+        public  async Task<Equipament> GetById(Guid id)
+        {
+            return await DbSet.FindAsync(id);
+        }
     }
 }

@@ -29,9 +29,10 @@ namespace Solucao.Application.Service.Implementations
             equipamentRepository = _equipamentRepository;
         }
 
-        public async Task<IEnumerable<CalendarViewModel>> GetAll(DateTime date)
+        public async Task<IEnumerable<CalendarViewModel>> GetAll(DateTime date, UserViewModel user)
         {
-            return mapper.Map<IEnumerable<CalendarViewModel>>(await calendarRepository.GetAll(date));
+            var _user = mapper.Map<User>(user);
+            return mapper.Map<IEnumerable<CalendarViewModel>>(await calendarRepository.GetAll(date,_user));
         }
         public async Task<CalendarViewModel> GetById(Guid id)
         {
@@ -230,11 +231,13 @@ namespace Solucao.Application.Service.Implementations
             return JsonConvert.SerializeObject(ret);
         }
 
-        public async Task<IEnumerable<EquipamentList>> GetAllByDate(DateTime date)
+        public async Task<IEnumerable<EquipamentList>> GetAllByDate(DateTime date, UserViewModel user)
         {
+            var _user = mapper.Map<User>(user);
+
             var list = new List<EquipamentList>();
             var equipament = await equipamentRepository.GetAll(true);
-            var calendars = await calendarRepository.GetAll(date);
+            var calendars = await calendarRepository.GetAll(date,_user);
 
             foreach (var item in equipament)
             {

@@ -12,7 +12,9 @@ namespace Solucao.Application.Service.Interfaces
     {
         Task<IEnumerable<ClientViewModel>> GetAll(bool ativo, string search);
 
-        Task<ClientViewModel> GetById(string Id);
+        Task<decimal> GetValueByEquipament(Guid clientId, Guid equipamentId, string startTime, string endTime);
+
+        Task<ClientViewModel> GetById(Guid Id);
 
         Task<ValidationResult> Add(ClientViewModel client);
 

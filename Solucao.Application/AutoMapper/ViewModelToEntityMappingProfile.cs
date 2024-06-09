@@ -22,6 +22,12 @@ namespace Solucao.Application.AutoMapper
             CreateMap<StickyNoteViewModel, StickyNote>();
             CreateMap<ModelViewModel, Model>();
             CreateMap<ModelAttributeViewModel, ModelAttributes>();
+            CreateMap<ConsumableViewModel, Consumable>();
+            CreateMap<EquipamentConsumableViewModel, EquipamentConsumable>();
+            CreateMap<CalendarEquipamentConsumablesViewModel, CalendarEquipamentConsumable>();
+            CreateMap<CalendarSpecificationConsumablesViewModel, CalendarSpecificationConsumables>();
+
+
         }
     }
 }

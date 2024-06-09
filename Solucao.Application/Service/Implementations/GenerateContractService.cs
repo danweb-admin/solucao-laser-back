@@ -306,7 +306,7 @@ namespace Solucao.Application.Service.Implementations
                 var valor = decimal.Parse(temp[1].Replace(",",""));
                 if (specification.Any(x => x.Specification.Name.ToUpper().Contains(temp[0].Trim())))
                 {
-                    retorno += valor;
+                    //retorno += valor;
                     calendar.Additional1 = valor;
 
                 }

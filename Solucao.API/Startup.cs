@@ -81,6 +81,8 @@ namespace Solucao.API
 
             services.AddHttpClient();
 
+            services.AddHttpContextAccessor();
+
             var server = Environment.GetEnvironmentVariable("DbServer");
             var port = Environment.GetEnvironmentVariable("DbPort");
             var user = Environment.GetEnvironmentVariable("DbUser");
@@ -103,11 +105,11 @@ namespace Solucao.API
         {
             DatabaseManagementService.MigrationInitialisation(app);
 
-            
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Solucao.API v1"));
-            
+
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Solucao.API v1"));
+
 
             /*INICIO DA CONFIGURAÇÃO - PROMETHEUS*/
             // Custom Metrics to count requests for each endpoint and the method
@@ -144,7 +146,7 @@ namespace Solucao.API
                     .AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader());
-            
+
 
 
             app.Use(async (context, next) =>

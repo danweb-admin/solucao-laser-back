@@ -1,17 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Solucao.Application.Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Solucao.Application.Data.Mappings
 {
-    public class SpecificationMapping : IEntityTypeConfiguration<Specification>
+	public class ConsumableMapping : IEntityTypeConfiguration<Consumable>
     {
-        public void Configure(EntityTypeBuilder<Specification> builder)
+        public void Configure(EntityTypeBuilder<Consumable> builder)
         {
             builder.Property(c => c.Id)
                 .HasColumnName("Id");
@@ -31,18 +27,7 @@ namespace Solucao.Application.Data.Mappings
             builder.Property(c => c.Active)
                 .HasColumnType("bit")
                 .IsRequired();
-
-            builder.Property(c => c.Single)
-                .HasColumnType("bit");
-
-            builder.Property(c => c.Amount)
-                .HasColumnType("int");
-
-            builder.Property(c => c.HasConsumable)
-                .HasColumnType("bit");
-
-            builder.Property(c => c.Value)
-                .HasColumnType("decimal(18,2)");
         }
     }
 }
+

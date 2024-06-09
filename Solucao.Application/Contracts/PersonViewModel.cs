@@ -16,5 +16,7 @@ namespace Solucao.Application.Contracts
         public string Plate { get; set; }
         public string CellPhone { get; set; }
         public string PersonType { get; set; }
+        public Guid? UserId { get; set; }
+        public UserViewModel User { get; set; }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using Solucao.Application.Data.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Solucao.Application.Contracts
 {
@@ -16,5 +13,7 @@ namespace Solucao.Application.Contracts
         public string Name { get; set; }
         public int Order { get; set; }
         public List<EquipamentSpecifications> EquipamentSpecifications { get; set; }
+        public List<EquipamentConsumableViewModel> EquipamentConsumables { get; set; }
+
     }
 }

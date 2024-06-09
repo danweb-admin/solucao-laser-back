@@ -28,6 +28,12 @@ namespace Solucao.API.Controllers
             clientService = _clientService;
         }
 
+        [HttpGet("client/value-by-equipament")]
+        public async Task<decimal> GetValueByEquipament([FromQuery] Guid clientId, Guid equipamentId, string startTime, string endTime)
+        {
+            return await clientService.GetValueByEquipament(clientId, equipamentId, startTime, endTime);
+        }
+
         [HttpGet("client")]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(Client))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ApplicationError))]
