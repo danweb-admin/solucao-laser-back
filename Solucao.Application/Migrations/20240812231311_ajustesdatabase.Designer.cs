@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Solucao.Application.Data;
 
 namespace Solucao.Application.Migrations
 {
     [DbContext(typeof(SolucaoContext))]
-    partial class SolucaoContextModelSnapshot : ModelSnapshot
+    [Migration("20240812231311_ajustesdatabase")]
+    partial class ajustesdatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -323,7 +325,7 @@ namespace Solucao.Application.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal");
 
                     b.Property<string>("Email")
                         .HasColumnType("varchar(50)")
@@ -334,7 +336,7 @@ namespace Solucao.Application.Migrations
                         .HasMaxLength(1500);
 
                     b.Property<decimal>("Freight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal");
 
                     b.Property<bool?>("Has220V")
                         .HasColumnType("bit");
@@ -431,56 +433,6 @@ namespace Solucao.Application.Migrations
                     b.HasIndex("StateId");
 
                     b.ToTable("Clients");
-                });
-
-            modelBuilder.Entity("Solucao.Application.Data.Entities.ClientEquipment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EquipmentRelationshipId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("EquipmentRelationshipId");
-
-                    b.ToTable("ClientEquipment");
-                });
-
-            modelBuilder.Entity("Solucao.Application.Data.Entities.ClientSpecification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Hours")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("SpecificationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("SpecificationId");
-
-                    b.ToTable("ClientSpecifications");
                 });
 
             modelBuilder.Entity("Solucao.Application.Data.Entities.Consumable", b =>
@@ -595,57 +547,6 @@ namespace Solucao.Application.Migrations
                     b.HasIndex("SpecificationId");
 
                     b.ToTable("EquipamentSpecifications");
-                });
-
-            modelBuilder.Entity("Solucao.Application.Data.Entities.EquipmentRelationship", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)")
-                        .HasMaxLength(50);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EquipmentRelantionships");
-                });
-
-            modelBuilder.Entity("Solucao.Application.Data.Entities.EquipmentRelationshipEquipment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("EquipamentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EquipmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EquipmentRelationshipId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EquipamentId");
-
-                    b.HasIndex("EquipmentRelationshipId");
-
-                    b.ToTable("EquipmentRelationshipEquipment");
                 });
 
             modelBuilder.Entity("Solucao.Application.Data.Entities.History", b =>
@@ -916,30 +817,6 @@ namespace Solucao.Application.Migrations
                     b.ToTable("TechnicalAttributes");
                 });
 
-            modelBuilder.Entity("Solucao.Application.Data.Entities.TimeValue", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClientEquipmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Time")
-                        .IsRequired()
-                        .HasColumnType("char(5)");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientEquipmentId");
-
-                    b.ToTable("TimeValues");
-                });
-
             modelBuilder.Entity("Solucao.Application.Data.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1094,36 +971,6 @@ namespace Solucao.Application.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Solucao.Application.Data.Entities.ClientEquipment", b =>
-                {
-                    b.HasOne("Solucao.Application.Data.Entities.Client", "Client")
-                        .WithMany("ClientEquipment")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Solucao.Application.Data.Entities.EquipmentRelationship", "EquipmentRelationship")
-                        .WithMany()
-                        .HasForeignKey("EquipmentRelationshipId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Solucao.Application.Data.Entities.ClientSpecification", b =>
-                {
-                    b.HasOne("Solucao.Application.Data.Entities.Client", "Client")
-                        .WithMany("ClientSpecifications")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Solucao.Application.Data.Entities.Specification", "Specification")
-                        .WithMany()
-                        .HasForeignKey("SpecificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Solucao.Application.Data.Entities.EquipamentConsumable", b =>
                 {
                     b.HasOne("Solucao.Application.Data.Entities.Consumable", "Consumable")
@@ -1150,19 +997,6 @@ namespace Solucao.Application.Migrations
                     b.HasOne("Solucao.Application.Data.Entities.Specification", "Specification")
                         .WithMany("EquipamentSpecifications")
                         .HasForeignKey("SpecificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Solucao.Application.Data.Entities.EquipmentRelationshipEquipment", b =>
-                {
-                    b.HasOne("Solucao.Application.Data.Entities.Equipament", "Equipament")
-                        .WithMany()
-                        .HasForeignKey("EquipamentId");
-
-                    b.HasOne("Solucao.Application.Data.Entities.EquipmentRelationship", "EquipmentRelationship")
-                        .WithMany("equipmentRelationshipEquipment")
-                        .HasForeignKey("EquipmentRelationshipId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1206,15 +1040,6 @@ namespace Solucao.Application.Migrations
                     b.HasOne("Solucao.Application.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Solucao.Application.Data.Entities.TimeValue", b =>
-                {
-                    b.HasOne("Solucao.Application.Data.Entities.ClientEquipment", "ClientEquipment")
-                        .WithMany("TimeValues")
-                        .HasForeignKey("ClientEquipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

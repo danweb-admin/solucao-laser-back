@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Solucao.Application.Contracts;
 using Solucao.Application.Contracts.Requests;
+using Solucao.Application.Contracts.Response;
 using Solucao.Application.Data.Entities;
 using Solucao.Application.Service.Interfaces;
 using Solucao.Application.Utils;
@@ -18,7 +19,7 @@ namespace Solucao.API.Controllers
 {
     [Route("api/v1")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ClientsController : ControllerBase
     {
         private readonly IClientService clientService;
@@ -41,7 +42,17 @@ namespace Solucao.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(ApplicationError))]
         public async Task<IEnumerable<ClientViewModel>> GetAllAsync([FromQuery] ClientRequest clientRequest)
         {
-            return await clientService.GetAll(clientRequest.Ativo,clientRequest.Search);
+            return await clientService.GetAll(clientRequest.Ativo, clientRequest.Search);
+        }
+
+        [HttpGet("client/by-id")]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(Client))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ApplicationError))]
+        [SwaggerResponse((int)HttpStatusCode.Conflict, Type = typeof(ApplicationError))]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(ApplicationError))]
+        public async Task<ClientViewModel> GetByIdAsync([FromQuery] Guid? id)
+        {
+            return await clientService.GetById(id);
         }
 
 
@@ -74,5 +85,35 @@ namespace Solucao.API.Controllers
                 return NotFound(result);
             return Ok(result);
         }
+
+        [HttpGet("client/adjust-equipment-values")]
+        public async Task AdjustEquipmentValues()
+        {
+            await clientService.AdjustEquipmentValues();
+        }
+
+        [HttpGet("client/migrate-client_values")]
+        public async Task MigrateClientValues()
+        {
+            await clientService.MigrateClientValues();
+        }
+
+        [HttpGet("client/client-equipment")]
+        public async Task<IEnumerable<ClientEquipmentNamesViewModel>> ClientEquipmentValues(string clientName)
+        {
+            return await clientService.ClientEquipment(clientName);
+        }
+
+        [HttpPut("client/client-equipment")]
+        public async Task<IActionResult> ClientEquipmentSave(ClientEquipmentNamesViewModel viewModel)
+        {
+            var result = await clientService.ClientEquipmentSave(viewModel);
+
+            if (result != null)
+                return NotFound(result);
+            return Ok(result);
+        }
+
+
     }
 }

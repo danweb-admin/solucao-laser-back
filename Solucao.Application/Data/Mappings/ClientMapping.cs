@@ -153,10 +153,10 @@ namespace Solucao.Application.Data.Mappings
                 .HasMaxLength(20);
 
             builder.Property(c => c.Discount)
-                .HasColumnType("decimal");
+                .HasColumnType("decimal(18,2)");
 
             builder.Property(c => c.Freight)
-                .HasColumnType("decimal");
+                .HasColumnType("decimal(18,2)");
 
             builder.Property(c => c.EquipamentValues)
                 .HasColumnType("varchar(1500)")

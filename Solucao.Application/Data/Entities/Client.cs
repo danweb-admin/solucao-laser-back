@@ -13,7 +13,7 @@ namespace Solucao.Application.Data.Entities
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-        public string  Number { get; set; }
+        public string Number { get; set; }
         public string Neighborhood { get; set; }
         public string Complement { get; set; }
         public int CityId { get; set; }
@@ -45,6 +45,15 @@ namespace Solucao.Application.Data.Entities
         public decimal Freight { get; set; }
         public City City { get; set; }
         public State State { get; set; }
+        public ICollection<ClientEquipment> ClientEquipment { get; set; }
+        public ICollection<ClientSpecification> ClientSpecifications { get; set; }
+
+
+        public Client()
+        {
+            ClientEquipment = new List<ClientEquipment>();
+            ClientSpecifications = new List<ClientSpecification>();
+        }
 
 
     }

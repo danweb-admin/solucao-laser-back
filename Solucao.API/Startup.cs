@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Prometheus;
@@ -97,7 +98,7 @@ namespace Solucao.API
                 connectionString = $"Server={server}, {port};Initial Catalog={database};User ID={user};Password={password}";
 
             services.AddDbContext<SolucaoContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

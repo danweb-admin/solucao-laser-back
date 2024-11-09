@@ -45,9 +45,18 @@ namespace Solucao.Application.Contracts
         public string Rg { get; set; }
         public string Ie { get; set; }
         public string EquipamentValues { get; set; }
-        public decimal Discount { get; set; }
-        public decimal Freight { get; set; }
+
         public object City { get; set; }
         public object State { get; set; }
+        public ICollection<ClientEquipmentViewModel> ClientEquipment { get; set; }
+        public ICollection<ClientSpecificationViewModel> ClientSpecifications { get; set; }
+
+        public ClientViewModel()
+        {
+            ClientEquipment = new List<ClientEquipmentViewModel>();
+            ClientSpecifications = new List<ClientSpecificationViewModel>();
+        }
+
+
     }
 }
