@@ -18,6 +18,8 @@ namespace Solucao.Application.Data.Mappings
 
             builder.Property(c => c.Hours);
 
+            builder.Property(c => c.Condition);
+
             builder.Property(c => c.Value)
                 .HasColumnType("decimal(18,2)");
 

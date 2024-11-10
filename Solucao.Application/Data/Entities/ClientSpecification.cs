@@ -6,8 +6,9 @@ namespace Solucao.Application.Data.Entities
         public Guid Id { get; set; }
         public Guid ClientId { get; set; }
         public Guid SpecificationId { get; set; }
-        public int Hours { get; set; }
+        public double Hours { get; set; }
         public decimal Value { get; set; }
+        public string Condition { get; set; }
         public Client Client { get; set; }
         public Specification Specification { get; set; }
     }

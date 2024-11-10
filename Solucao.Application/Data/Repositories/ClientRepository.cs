@@ -111,7 +111,7 @@ namespace Solucao.Application.Data.Repositories
 
         public async Task<IEnumerable<ClientSpecification>> GetSpecsByClient(Guid clientId)
         {
-            return await Db.ClientSpecifications.Where(x => x.ClientId == clientId).ToListAsync();
+            return await Db.ClientSpecifications.Where(x => x.ClientId == clientId).OrderBy(x => x.Hours).ToListAsync();
         }
     }
 }

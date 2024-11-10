@@ -274,6 +274,9 @@ namespace Solucao.Application.Service.Implementations
 
         private decimal ValuesBySpecification(CalendarViewModel calendar, IEnumerable<ClientSpecification> specifications, decimal valueWithoutSpec)
         {
+            TimeSpan difference = calendar.EndTime.Value - calendar.StartTime.Value;
+            var rentalTime = difference.TotalHours;
+
             calendar.ValueWithoutSpec = valueWithoutSpec;
             var specs = calendar.CalendarSpecifications.Where(x => x.Active);
 
@@ -282,8 +285,13 @@ namespace Solucao.Application.Service.Implementations
                 foreach(var item in specifications)
                 {
                     if (item.SpecificationId == spec.SpecificationId)
-                        calendar.Additional1 = item.Value;
-                    
+                    {
+                        if ( rentalTime  <= item.Hours || item.Hours == 0)
+                        {
+                            calendar.Additional1 = item.Value;
+                            return valueWithoutSpec;
+                        }   
+                    }
                 }
             }
 
