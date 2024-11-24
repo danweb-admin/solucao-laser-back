@@ -28,6 +28,20 @@ namespace Solucao.Application.Data.Repositories
 
             return results;
         }
+
+        public async Task<IEnumerable<Calendar>> DashboardGetCalendarByPeriodAndStatusAndDriver(DateTime startDate, DateTime endDate, string status)
+        {
+            var _in = status.Split(",");
+
+            var results = await Db.Calendars
+                .Include(x => x.Driver)
+                .Include(x => x.Equipament)
+                .Where(c => c.Date >= startDate && c.Date <= endDate
+                            && (_in.Contains(c.Status) && c.Driver != null) && c.Active).ToListAsync();
+
+            return results;
+        }
     }
+
 }
 

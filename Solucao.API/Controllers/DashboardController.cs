@@ -24,10 +24,28 @@ namespace Solucao.API.Controllers
         [HttpGet("dashboard/locacoes-by-period")]
         public async Task<IActionResult> LocacoesByPeriod([FromQuery] DashboardRequest request)
         {
-            DateTime startDate = DateTime.ParseExact(request.StartDate, "dd-MM-yyyy", cultureInfo);
-            DateTime endDate = DateTime.ParseExact(request.EndDate, "dd-MM-yyyy", cultureInfo);
+            DateTime startDate = DateTime.ParseExact(request.StartDate, "yyyy-MM-dd", cultureInfo);
+            DateTime endDate = DateTime.ParseExact(request.EndDate, "yyyy-MM-dd", cultureInfo);
 
             return Ok(await service.LocacoesByPeriod(startDate, endDate, request.Status));
+        }
+
+        [HttpGet("dashboard/equipment-by-period")]
+        public async Task<IActionResult> EquipmentByPeriod([FromQuery] DashboardRequest request)
+        {
+            DateTime startDate = DateTime.ParseExact(request.StartDate, "yyyy-MM-dd", cultureInfo);
+            DateTime endDate = DateTime.ParseExact(request.EndDate, "yyyy-MM-dd", cultureInfo);
+
+            return Ok(await service.EquipmentByPeriod(startDate, endDate, request.Status));
+        }
+
+        [HttpGet("dashboard/driver-by-period")]
+        public async Task<IActionResult> DriverByPeriod([FromQuery] DashboardRequest request)
+        {
+            DateTime startDate = DateTime.ParseExact(request.StartDate, "yyyy-MM-dd", cultureInfo);
+            DateTime endDate = DateTime.ParseExact(request.EndDate, "yyyy-MM-dd", cultureInfo);
+
+            return Ok(await service.DriverByPeriod(startDate, endDate, request.Status));
         }
     }
 }

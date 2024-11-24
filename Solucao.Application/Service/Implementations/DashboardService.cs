@@ -18,6 +18,45 @@ namespace Solucao.Application.Service.Implementations
             repository = _repository;
         }
 
+        public async Task<IEnumerable<SeriesDataDriverOrEquipmentViewModel>> EquipmentByPeriod(DateTime startDate, DateTime endDate, string status)
+        {
+            
+                var result = await repository.DashboardGetCalendarByPeriodAndStatusAndDriver(startDate, endDate, status);
+
+                var query = result
+                        .GroupBy(l => l.Equipament.Name)
+                        .Select(g => new SeriesDataDriverOrEquipmentViewModel
+                        {
+                            Name = g.Key,
+                            Total = g.Count()
+                        })
+                        .OrderByDescending(x => x.Total)
+                        .Take(5)
+                        .ToList();
+
+                return query;
+            
+        }
+
+        public async Task<IEnumerable<SeriesDataDriverOrEquipmentViewModel>> DriverByPeriod(DateTime startDate, DateTime endDate, string status)
+        {
+
+            var result = await repository.DashboardGetCalendarByPeriodAndStatusAndDriver(startDate, endDate, status);
+
+            var query = result
+                    .GroupBy(l => l.Driver.Name)
+                    .Select(g => new SeriesDataDriverOrEquipmentViewModel
+                    {
+                        Name = g.Key,
+                        Total = g.Count()
+                    })
+                    .OrderByDescending(x => x.Total)
+                    .Take(5)
+                    .ToList();
+
+            return query;
+
+        }
 
         public async Task<IEnumerable<SeriesDataViewModel>> LocacoesByPeriod(DateTime startDate, DateTime endDate, string status)
         {
