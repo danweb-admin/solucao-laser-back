@@ -257,18 +257,18 @@ namespace Solucao.Application.Service.Implementations
 
             var result = await clientRepository.GetEquipmentValueByClient(calendar.ClientId, calendar.EquipamentId, rentalTimeString);
 
-            if (result != 0)
-            {
+            //if (result != 0)
+            //{
 
                 var specs = await clientRepository.GetSpecsByClient(calendar.ClientId);
                 if (specs.Count() > 0)
                     calendar.Value = ValuesBySpecification(calendar, specs, result);
                 else
                     calendar.Value = calendar.ValueWithoutSpec = result;
-                return;
-            }
+            //    return;
+            //}
 
-            throw new CalendarNoValueException("Não foi encontrado o valor para a Locação no cadastro do cliente");
+            //throw new CalendarNoValueException("Não foi encontrado o valor para a Locação no cadastro do cliente");
 
         }
 
