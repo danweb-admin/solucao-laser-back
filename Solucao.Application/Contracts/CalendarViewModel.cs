@@ -48,5 +48,7 @@ namespace Solucao.Application.Contracts
         public Client Client { get; set; }
         public Equipament Equipament { get; set; }
         public IList<CalendarSpecifications> CalendarSpecifications { get; set; }
+        public IList<CalendarEquipamentConsumablesViewModel> CalendarEquipamentConsumables { get; set; }
+        public IList<CalendarSpecificationConsumablesViewModel> CalendarSpecificationConsumables { get; set; }
     }
 }

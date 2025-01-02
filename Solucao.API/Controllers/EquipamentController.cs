@@ -34,7 +34,8 @@ namespace Solucao.API.Controllers
         [SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(ApplicationError))]
         public async Task<IEnumerable<EquipamentViewModel>> GetAllAsync([FromQuery] EquipamentRequest request)
         {
-            return await service.GetAll(request.Ativo);
+            var resutl = await service.GetAll(request.Ativo);
+            return resutl;
         }
 
         [HttpPost("equipaments")]

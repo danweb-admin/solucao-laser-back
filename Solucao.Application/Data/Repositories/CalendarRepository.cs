@@ -64,6 +64,10 @@ namespace Solucao.Application.Data.Repositories
                                          .Include(x => x.Technique)
                                          .Include(x => x.User)
                                          .Include(x => x.CalendarSpecifications)
+                                         .Include(x => x.CalendarEquipamentConsumables)
+                                         .ThenInclude(x => x.Consumable)
+                                         .Include(x => x.CalendarSpecificationConsumables)
+                                         .ThenInclude(x => x.Specification)
                                          .Where(x => x.Date.Date == date && x.Active && !notIn.Contains(x.Status))
                                          .OrderBy(x => x.Status).ToListAsync();
 

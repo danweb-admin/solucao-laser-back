@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Solucao.Application.Contracts;
+using Solucao.Application.Contracts.Requests;
+using Solucao.Application.Contracts.Response;
 using Solucao.Application.Data.Entities;
 using Solucao.Application.Data.Interfaces;
 using Solucao.Application.Data.Repositories;
@@ -9,8 +12,10 @@ using Solucao.Application.Service.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Calendar = Solucao.Application.Data.Entities.Calendar;
 
 namespace Solucao.Application.Service.Implementations
 {
@@ -20,13 +25,18 @@ namespace Solucao.Application.Service.Implementations
         private CalendarRepository calendarRepository;
         private IEquipamentRepository equipamentRepository;
         private SpecificationRepository specificationRepository;
+        private IClientRepository clientRepository;
+
         private readonly IMapper mapper;
-        public CalendarService(CalendarRepository _calendarRepository, IMapper _mapper, SpecificationRepository _specificationRepository, IEquipamentRepository _equipamentRepository)
+
+
+        public CalendarService(CalendarRepository _calendarRepository, IMapper _mapper, SpecificationRepository _specificationRepository, IEquipamentRepository _equipamentRepository, IClientRepository _clientRepository)
         {
             calendarRepository = _calendarRepository;
             mapper = _mapper;
             specificationRepository = _specificationRepository;
             equipamentRepository = _equipamentRepository;
+            clientRepository = _clientRepository;
         }
 
         public async Task<IEnumerable<CalendarViewModel>> GetAll(DateTime date, UserViewModel user)
@@ -218,8 +228,10 @@ namespace Solucao.Application.Service.Implementations
                 for (int day = 1; day <= monthDays; day++)
                 {
                     dynamic availableDay = new JObject();
-                    availableDay.Available = !unavailables.Any(x => x.Date.Date.Day == day && x.EquipamentId == item.Id);
+                    var rental = unavailables.Where(x => x.Date.Date.Day == day && x.EquipamentId == item.Id);
+                    availableDay.Available = !rental.Any();
                     availableDay.Day = day;
+                    availableDay.Time = returnTime(rental);
                     dayList.Add(availableDay);
                 }
                 objectList.Add(dayList);
@@ -382,6 +394,106 @@ namespace Solucao.Application.Service.Implementations
             return null;
         }
 
-        
+        private string  returnTime(IEnumerable<Calendar> calendars)
+        {
+            if (!calendars.Any())
+                return string.Empty;
+
+            var ret = new List<string>();
+
+            foreach (var item in calendars)
+            {
+                ret.Add($"{item.StartTime.Value.ToString("HH:mm")} - {item.EndTime.Value.ToString("HH:mm")}");
+            }
+
+            return string.Join(",",ret);
+        }
+
+        public async Task<List<BulkSchedulingResponse>> BulkScheduling(BulkSchedulingRequest request, Guid user)
+        {
+            List<BulkSchedulingResponse> responses = new List<BulkSchedulingResponse>();
+
+            var datas = request.Date.Split(",");
+            CultureInfo cultureInfo = new CultureInfo("pt-BR");
+
+            foreach (var item in datas)
+            {
+                var data = DateTime.ParseExact(item, "dd/MM/yyyy", cultureInfo);
+                DateTime start = DateTime.Now;
+                DateTime end = DateTime.Now;
+
+                if (!string.IsNullOrEmpty(request.StartTime1))
+                {
+                    var start_ = data.Date.ToString("yyyy-MM-dd") + " " + request.StartTime1.Insert(2, ":");
+                    start = DateTime.Parse(start_);
+                }
+
+                if (!string.IsNullOrEmpty(request.EndTime1))
+                {
+                    var end_ = data.Date.ToString("yyyy-MM-dd") + " " + request.EndTime1.Insert(2, ":");
+                    end = DateTime.Parse(end_);
+                }
+
+                var client = await clientRepository.GetById(request.ClientId);
+
+                var rentalTime = Utils.Helpers.RentalTime(request.StartTime1, request.EndTime1);
+
+                var rentalTimeString = Utils.Helpers.FormatTime((decimal)rentalTime);
+
+                var result = await clientRepository.GetEquipmentValueByClient(client.Id, request.EquipmentId, rentalTimeString);
+
+                // obtem todas as locacoes do dia
+                var calendars = await calendarRepository.GetCalendarsByDate(data);
+
+                if (ValidEquipamentInUse(calendars, request.EquipmentId, request.ClientId, start, end))
+                {
+                    responses.Add(new BulkSchedulingResponse
+                        {
+                            Message = $"{data.ToString("dd/MM/yyyy")} - Indisponível",
+                            Status = "Error"
+                        }
+                    );
+                }
+                else
+                {
+                    responses.Add(new BulkSchedulingResponse
+                    {
+                        Message = $"{data.ToString("dd/MM/yyyy")} - Disponível",
+                        Status = "Ok"
+                    }
+                    );
+                }
+
+                if (!request.CheckScheduling)
+                {
+                    var calendar = new Calendar
+                    {
+                        Date = data,
+                        Status = "2", //pendente
+                        StartTime = start,
+                        EndTime = end,
+                        EquipamentId = request.EquipmentId,
+                        ClientId = request.ClientId,
+                        CreatedAt = DateTime.Now,
+                        Note = request.Note,
+                        Discount = client.Discount,
+                        Freight = client.Freight,
+                        Value = result,
+                        TotalValue = result + client.Freight - client.Discount,
+                        UserId = user,
+                        Active = true
+
+
+                    };
+
+                    if (request.CalendarSpecifications.Any())
+                        calendar.CalendarSpecifications = request.CalendarSpecifications;
+
+                    await calendarRepository.Add(calendar);
+                }
+            }
+
+            return responses;
+        }
     }
 }
