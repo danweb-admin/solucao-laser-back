@@ -412,12 +412,14 @@ namespace Solucao.Application.Service.Implementations
         public async Task<List<BulkSchedulingResponse>> BulkScheduling(BulkSchedulingRequest request, Guid user)
         {
             List<BulkSchedulingResponse> responses = new List<BulkSchedulingResponse>();
+            
 
             var datas = request.Date.Split(",");
             CultureInfo cultureInfo = new CultureInfo("pt-BR");
 
             foreach (var item in datas)
             {
+                List<CalendarSpecifications> specs = new List<CalendarSpecifications>();
                 var data = DateTime.ParseExact(item, "dd/MM/yyyy", cultureInfo);
                 DateTime start = DateTime.Now;
                 DateTime end = DateTime.Now;
@@ -495,8 +497,20 @@ namespace Solucao.Application.Service.Implementations
                         calendar.TechniqueId = request.TechniqueId.Value;
                     }
 
-                    if (request.CalendarSpecifications.Any())
-                        calendar.CalendarSpecifications = request.CalendarSpecifications;
+
+                    calendar.CalendarSpecifications = new List<CalendarSpecifications>();
+
+                    foreach (var specification in request.CalendarSpecifications)
+                    {
+
+                        var spec = new CalendarSpecifications {
+                            Active = specification.Active,
+                            SpecificationId = specification.SpecificationId
+                        };
+                        specs.Add(spec);
+                    }
+
+                    calendar.CalendarSpecifications = specs;
 
                     await calendarRepository.Add(calendar);
                 }
