@@ -434,6 +434,8 @@ namespace Solucao.Application.Service.Implementations
                     end = DateTime.Parse(end_);
                 }
 
+                
+
                 var client = await clientRepository.GetById(request.ClientId);
 
                 var rentalTime = Utils.Helpers.RentalTime(request.StartTime1, request.EndTime1);
@@ -466,6 +468,8 @@ namespace Solucao.Application.Service.Implementations
 
                 if (!request.CheckScheduling)
                 {
+
+
                     var calendar = new Calendar
                     {
                         Date = data,
@@ -485,6 +489,11 @@ namespace Solucao.Application.Service.Implementations
 
 
                     };
+
+                    if (request.TechniqueId.HasValue)
+                    {
+                        calendar.TechniqueId = request.TechniqueId.Value;
+                    }
 
                     if (request.CalendarSpecifications.Any())
                         calendar.CalendarSpecifications = request.CalendarSpecifications;
