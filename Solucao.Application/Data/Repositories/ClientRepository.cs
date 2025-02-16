@@ -82,7 +82,17 @@ namespace Solucao.Application.Data.Repositories
         {
             try
             {
-                DbSet.Update(client);
+                foreach (var item in client.ClientSpecifications)
+                    Db.Entry(item).State = EntityState.Added;
+                
+
+                foreach (var item in client.ClientEquipment)
+                {
+                    Db.Entry(item).State = EntityState.Modified;
+                    foreach (var timeValue in item.TimeValues)
+                        Db.Entry(timeValue).State = EntityState.Modified;
+                }
+                Db.Entry(client).State = EntityState.Modified;
                 await Db.SaveChangesAsync();
                 return ValidationResult.Success;
             }
@@ -92,8 +102,6 @@ namespace Solucao.Application.Data.Repositories
             }
 
         }
-
-
 
         public async Task<ValidationResult> AddClientEquipmentAndTimeValues(Client client)
         {

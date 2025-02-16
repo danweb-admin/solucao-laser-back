@@ -15,6 +15,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Solucao.Application.Contracts.Requests;
+using System.Net.Http;
+using Ical.Net;
+using Ical.Net.Serialization;
+
 
 namespace Solucao.API.Controllers
 {
