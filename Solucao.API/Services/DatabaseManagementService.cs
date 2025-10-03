@@ -18,7 +18,7 @@ namespace Solucao.API.Services
             {
                 // Takes all of our migrations files and apply them 
                 // against the database in case they are not implemented
-                serviceScope.ServiceProvider.GetService<SolucaoContext>().Database.Migrate();
+                //serviceScope.ServiceProvider.GetService<SolucaoContext>().Database.Migrate();
             }
         }
     }

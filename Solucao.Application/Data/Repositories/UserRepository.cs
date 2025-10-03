@@ -76,5 +76,11 @@ namespace Solucao.Application.Data.Repositories
 
         }
 
+        public virtual async Task<User> GetByToken(string token)
+        {
+            return await Db.Users.FirstOrDefaultAsync(x => x.Token == token && x.Active);
+
+        }
+
     }
 }

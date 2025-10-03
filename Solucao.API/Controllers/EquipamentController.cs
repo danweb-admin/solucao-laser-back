@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Solucao.Application.Contracts;
 using Solucao.Application.Contracts.Requests;
 using Solucao.Application.Data.Entities;
+using Solucao.Application.Service.Implementations;
 using Solucao.Application.Service.Interfaces;
 using Solucao.Application.Utils;
 using Swashbuckle.AspNetCore.Annotations;
@@ -21,29 +22,48 @@ namespace Solucao.API.Controllers
     public class EquipamentController : ControllerBase
     {
         private readonly IEquipamentService service;
+        private readonly IUserService userService;
 
-        public EquipamentController(IEquipamentService _service)
+
+        public EquipamentController(IEquipamentService _service, IUserService _userService)
         {
             service = _service;
+            userService = _userService;
         }
 
         [HttpGet("equipaments")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(Equipament))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ApplicationError))]
-        [SwaggerResponse((int)HttpStatusCode.Conflict, Type = typeof(ApplicationError))]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(ApplicationError))]
-        public async Task<IEnumerable<EquipamentViewModel>> GetAllAsync([FromQuery] EquipamentRequest request)
+        public async Task<IActionResult> GetAsync([FromQuery] EquipamentRequest request)
         {
-            var resutl = await service.GetAll(request.Ativo);
-            return resutl;
+            var result = await service.GetAll(request.Ativo);
+
+            return Ok(result);
+        }
+
+        [HttpGet("equipaments/get-all")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllAsync([FromQuery] EquipamentRequest request)
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+            if (string.IsNullOrEmpty(token))
+                return NotFound("Token não fornecido. Entre em contato com o suporte.");
+
+            var user = await userService.GetByToken(token.Replace("Bearer ", ""));
+
+            if (user == null)
+                return NotFound("Você não tem permissão para visualizar os dados dessa página. Entre em contato com o suporte.");
+
+            var hoje = DateTime.Now;
+
+            if (hoje.Date > user.Token_Expire.Value.Date)
+                return NotFound("Token expirado. Entre em contato com o suporte.");
+
+            var result = await service.GetAll(request.Ativo);
+
+            return Ok(result);
         }
 
         [HttpPost("equipaments")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(ValidationResult))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ApplicationError))]
-        [SwaggerResponse((int)HttpStatusCode.Conflict, Type = typeof(ApplicationError))]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(ApplicationError))]
-        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ApplicationError))]
         public async Task<IActionResult> PostAsync([FromBody] EquipamentViewModel model)
         {
 
@@ -56,10 +76,6 @@ namespace Solucao.API.Controllers
 
 
         [HttpPut("equipaments/{id}")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(ValidationResult))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ApplicationError))]
-        [SwaggerResponse((int)HttpStatusCode.Conflict, Type = typeof(ApplicationError))]
-        [SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(ApplicationError))]
         public async Task<IActionResult> PutAsync(string id, [FromBody] EquipamentViewModel model)
         {
             var result = await service.Update(model);

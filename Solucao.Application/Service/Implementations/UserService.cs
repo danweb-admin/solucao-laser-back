@@ -84,5 +84,10 @@ namespace Solucao.Application.Service.Implementations
         {
             return mapper.Map<UserViewModel>(await userRepository.GetByEmail(email));
         }
+
+        public async Task<UserViewModel> GetByToken(string Token)
+        {
+            return mapper.Map<UserViewModel>(await userRepository.GetByToken(Token));
+        }
     }
 }
