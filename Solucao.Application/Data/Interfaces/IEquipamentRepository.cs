@@ -9,6 +9,7 @@ namespace Solucao.Application.Data.Interfaces
 	public interface IEquipamentRepository
 	{
         Task<IEnumerable<Equipament>> GetAll(bool ativo);
+        Task<IEnumerable<Equipament>> Get(bool ativo);
         Task<IEnumerable<Equipament>> GetListById(List<Guid> guids);
         Task<Equipament> GetById(Guid id);
         Task<ValidationResult> Add(Equipament equipament);

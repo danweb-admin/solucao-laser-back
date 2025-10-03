@@ -23,7 +23,7 @@ namespace Solucao.Application.Data.Repositories
             DbSet = Db.Set<Equipament>();
         }
 
-        public virtual async Task<IEnumerable<Equipament>> GetAll(bool ativo)
+        public virtual async Task<IEnumerable<Equipament>> Get(bool ativo)
         {
             return await Db.Equipaments
                 .Include(x => x.EquipamentSpecifications)
@@ -32,6 +32,11 @@ namespace Solucao.Application.Data.Repositories
                 .Where(x => x.Active == ativo).OrderBy(x => x.Order).ToListAsync();
         }
 
+        public virtual async Task<IEnumerable<Equipament>> GetAll(bool ativo)
+        {
+            return await Db.Equipaments
+                .Where(x => x.Active == ativo).OrderBy(x => x.Order).ToListAsync();
+        }
         public virtual async Task<IEnumerable<Equipament>> GetListById(List<Guid> guids)
         {
             return await Db.Equipaments.Include(x => x.EquipamentSpecifications)

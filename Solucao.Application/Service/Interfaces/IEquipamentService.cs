@@ -10,6 +10,8 @@ namespace Solucao.Application.Service.Interfaces
 {
     public interface IEquipamentService
     {
+        Task<IEnumerable<EquipamentViewModel>> Get(bool ativo);
+
         Task<IEnumerable<EquipamentViewModel>> GetAll(bool ativo);
 
         Task<ValidationResult> Add(EquipamentViewModel equipament);

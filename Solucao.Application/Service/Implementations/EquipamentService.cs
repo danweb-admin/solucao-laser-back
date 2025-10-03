@@ -36,6 +36,11 @@ namespace Solucao.Application.Service.Implementations
             return mapper.Map<IEnumerable<EquipamentViewModel>>(await equipamentRepository.GetAll(ativo));
         }
 
+        public async Task<IEnumerable<EquipamentViewModel>> Get(bool ativo)
+        {
+            return mapper.Map<IEnumerable<EquipamentViewModel>>(await equipamentRepository.Get(ativo));
+        }
+
         public Task<ValidationResult> Update(EquipamentViewModel equipament)
         {
             var _equipament = mapper.Map<Equipament>(equipament);

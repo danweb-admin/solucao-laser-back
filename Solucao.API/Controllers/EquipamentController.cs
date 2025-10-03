@@ -34,7 +34,7 @@ namespace Solucao.API.Controllers
         [HttpGet("equipaments")]
         public async Task<IActionResult> GetAsync([FromQuery] EquipamentRequest request)
         {
-            var result = await service.GetAll(request.Ativo);
+            var result = await service.Get(request.Ativo);
 
             return Ok(result);
         }
